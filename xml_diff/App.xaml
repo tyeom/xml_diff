@@ -1,0 +1,20 @@
+﻿<Application x:Class="xml_diff.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:xml_diff"
+             xmlns:dataContext="clr-namespace:xml_diff.ViewModels"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <dataContext:ViewModelProvider x:Key="ViewModelProvider" />
+
+            <DataTemplate DataType="{x:Type dataContext:Diff01ViewModel}">
+                <local:XmlDiff01 />
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type dataContext:Diff02ViewModel}">
+                <local:XmlDiff02 />
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
