@@ -826,6 +826,30 @@ namespace XmlDiffLib
             draggedItem = null;
         }
 
+        /// <summary>
+        /// Group or Process Id 생성<para/>
+        /// 
+        /// 아이디 체계<para/>
+        /// Group id : {Group id}.000000<para/>
+        /// Process id : {Group id}.{Process id}<para/>
+        /// 
+        /// 총 12자리 숫자 이상으로 구성<para/>
+        /// 앞 6자리 : Group id, 뒤 자리 Process id<para/>
+        /// 
+        /// [규칙]<para/>
+        /// 01. 노드가 추가 되는 경우 이전 노드 id에서 +1 또는 자릿수 증가<para/>
+        /// 
+        /// 02. 이전 노드, 다음 노드 id 사이에 +1로 id 증가가 가는 한 경우 +1로 생성<para/>
+        /// 예] 001000.001000 - {노드 추가} - 001000.003000 인 경우 001000.002000 로 id 생성<para/>
+        /// 
+        /// 03. +1로 id 증가 했을 경우 id가 중복 되는 경우 자릿수 증가<para/>
+        /// 예] 001000.001000 - {노드 추가} - 001000.002000 인 경우 001000.011000 로 id 생성<para/>
+        /// 
+        /// 04. 자릿수 증가인 경우 최대 늘어나는 조건은 없다. 무한 증가 가능
+        /// </summary>
+        /// <param name="currentTreeViewItem"></param>
+        /// <param name="isGroupId"></param>
+        /// <returns></returns>
         private string GenerationId(TreeViewItem currentTreeViewItem, bool isGroupId)
         {
             var parent = currentTreeViewItem.Parent as ItemsControl;
@@ -1218,142 +1242,6 @@ namespace XmlDiffLib
                 }
                 XmlDiffHelper.Diff2(diffRootArr[0], diffRootArr[1]);
             }
-
-
-            //// 2. 모델 리스트 처리
-            //// 삭제
-            //Group? tempParentGroup = null;
-            //Process? tempParentProcess = null;
-            //if (parent.DataContext is Group group &&
-            //    group.ParentGroup is null)
-            //{
-            //    tempParentGroup = group;
-            //    _rootModel?.Groups?.Remove(group);
-            //}
-            //// NestedGroup 경우
-            //else if (parent.DataContext is Group nestedGroup &&
-            //    nestedGroup.ParentGroup is not null)
-            //{
-            //    tempParentGroup = nestedGroup;
-            //    nestedGroup.ParentGroup.NestedGroup?.Remove(nestedGroup);
-            //}
-            //else if (parent.DataContext is Process process &&
-            //    process.ParentGroup is not null)
-            //{
-            //    tempParentProcess = process;
-            //    process.ParentGroup.Processes?.Remove(process);
-            //}
-
-            //// 삽입
-            //if (target.DataContext is Group targetGroup &&
-            //    targetGroup.ParentGroup is null)
-            //{
-            //    // 이동 타겟 순서
-            //    int? idx = null;
-            //    idx = _rootModel?.Groups?.IndexOf(targetGroup);
-
-            //    if (idx is not null &&
-            //        idx > -1)
-            //    {
-            //        if (tempParentGroup is not null)
-            //        {
-            //            if (diffRootArr[0]?.Groups?.Count >= idx.Value)
-            //            {
-            //                diffRootArr[0]?.Groups?.Insert(idx.Value, tempParentGroup);
-            //            }
-            //            else
-            //            {
-            //                diffRootArr[0]?.Groups?.Insert(diffRootArr[0].Groups.Count, tempParentGroup);
-            //            }
-            //        }
-            //        else if (tempParentProcess is not null)
-            //        {
-            //            if (targetGroup.Processes.Count >= idx.Value)
-            //            {
-            //                targetGroup.Processes?.Insert(idx.Value, tempParentProcess);
-            //            }
-            //            else
-            //            {
-            //                targetGroup.Processes?.Insert(targetGroup.Processes.Count, tempParentProcess);
-            //            }
-            //        }
-            //    }
-            //}
-            //// NestedGroup 경우
-            //else if (target.DataContext is Group targetNestedGroup &&
-            //    targetNestedGroup.ParentGroup is not null)
-            //{
-            //    // 이동 타겟 순서
-            //    int? idx = targetNestedGroup.ParentGroup.NestedGroup?.IndexOf(targetNestedGroup);
-
-            //    if (idx is not null &&
-            //        idx > -1)
-            //    {
-            //        if (tempParentGroup is not null)
-            //        {
-            //            if (targetNestedGroup.ParentGroup.NestedGroup.Count >= idx.Value)
-            //            {
-            //                targetNestedGroup.ParentGroup.NestedGroup?.Insert(idx.Value, tempParentGroup);
-            //            }
-            //            else
-            //            {
-            //                targetNestedGroup.ParentGroup.NestedGroup?.Insert(targetNestedGroup.ParentGroup.NestedGroup.Count, tempParentGroup);
-            //            }
-            //        }
-            //        else if (tempParentProcess is not null)
-            //        {
-            //            if (targetNestedGroup.Processes.Count >= idx.Value)
-            //            {
-            //                targetNestedGroup.Processes?.Insert(idx.Value, tempParentProcess);
-            //            }
-            //            else
-            //            {
-            //                targetNestedGroup.Processes?.Insert(targetNestedGroup.Processes.Count, tempParentProcess);
-            //            }
-            //        }
-            //    }
-            //}
-            //else if (target.DataContext is Process targetProcess &&
-            //    targetProcess.ParentGroup is not null)
-            //{
-            //    // 이동 타겟 순서
-            //    int? idx = targetProcess.ParentGroup.Processes?.IndexOf(targetProcess);
-
-            //    if (idx is not null &&
-            //        idx > -1)
-            //    {
-            //        if (tempParentGroup is not null)
-            //        {
-            //            if (targetProcess.ParentGroup == tempParentGroup.ParentGroup)
-            //            {
-            //                /// 같은 Group내 에서 NestedGroup 이 이동 되는 경우 시각적인 TreeViewItem만 처리 하고
-            //                /// Model은 구조가 변경되지 않기에 처리 하지 않는다.
-            //            }
-            //            else
-            //            {
-            //                if (targetProcess.ParentGroup.NestedGroup.Count >= idx.Value)
-            //                {
-            //                    targetProcess.ParentGroup.NestedGroup?.Insert(idx.Value, tempParentGroup);
-            //                }
-            //                else
-            //                {
-            //                    targetProcess.ParentGroup.NestedGroup?.Insert(targetProcess.ParentGroup.NestedGroup.Count, tempParentGroup);
-            //                }
-            //            }
-            //        }
-            //        else if (tempParentProcess is not null)
-            //        {
-            //            if (targetProcess.ParentGroup.Processes.Count > idx.Value)
-            //            {
-            //                targetProcess.ParentGroup.Processes?.Insert(idx.Value, tempParentProcess);
-            //            }
-            //            else
-            //            {
-            //                targetProcess.ParentGroup.Processes?.Insert(targetProcess.ParentGroup.Processes.Count, tempParentProcess);
-            //            }
-            //        }
-            //    }
-            //}
         }
 
         private T FindAncestor<T>(DependencyObject current) where T : DependencyObject
@@ -1377,29 +1265,6 @@ namespace XmlDiffLib
 
             _clipboard = new();
             _clipboard.ItemNode = _tempRightClickNode;
-
-
-
-            //if(_tempRightClickNode.Parent is TreeViewItem treeViewItem)
-            //{
-            //    _clipboard.ItemNode = this.DeepCopyTreeViewItem(_tempRightClickNode);
-            //}
-            //else
-            //{
-            //    _clipboard.ItemNode = this.DeepCopyTreeViewItem(_tempRightClickNode);
-            //}
-
-            //if (_tempRightClickNode.DataContext is Group group)
-            //{
-            //    _clipboard.GroupModel = group.CloneData();
-            //    foreach (var p in _clipboard.GroupModel.Processes)
-            //        p.ParentGroup = _clipboard.GroupModel;
-            //}
-            //if (_tempRightClickNode.DataContext is Process process)
-            //{
-            //    _clipboard.ProcessModel = process.CloneData();
-            //    _clipboard.ProcessModel.ParentGroup = process.ParentGroup;
-            //}
         }
 
         private void PasteMenu_Click(object sender, RoutedEventArgs e)
@@ -1407,94 +1272,6 @@ namespace XmlDiffLib
             if(_clipboard.ItemNode is null || _tempRightClickNode is null) return;
 
             this.MoveNode(_clipboard.ItemNode, _tempRightClickNode, true);
-
-            ////Group g = new Group();
-            ////g.Name = "a";
-            ////g.Id = "dsdf";
-            ////TreeViewItem treeViewItema = new();
-            ////treeViewItema.Header = g;
-            ////treeViewItema.DataContext = g;
-            ////treeViewItema.ItemContainerStyle = this.Resources["sTreeViewItem"] as Style;
-            ////this.xTreeView.Items.Add(treeViewItema);
-
-            //if (_tempRightClickNode is null || _clipboard is null) return;
-
-            //// Group node에 붙여넣기 한 경우
-            //if (_tempRightClickNode.DataContext is Group group)
-            //{
-            //    TreeViewItem treeViewItem = new();
-
-            //    // 붙여넣기 대상이 Group인 경우
-            //    if (_clipboard.GroupModel is not null)
-            //    {
-            //        var groupModel = _clipboard.GroupModel.CloneData();
-            //        foreach (var p in groupModel.Processes)
-            //            p.ParentGroup = groupModel;
-            //        groupModel.ParentGroup = group;
-            //        group.NestedGroup.Add(groupModel);
-
-            //        treeViewItem = this.DeepCopyTreeViewItem(_clipboard.ItemNode);
-            //        treeViewItem.Header = groupModel;
-            //        treeViewItem.DataContext = groupModel;
-            //        treeViewItem.ItemContainerStyle = this.Resources["sTreeViewItem"] as Style;
-            //        _tempRightClickNode.Items.Add(treeViewItem);
-            //    }
-            //    // 붙여넣기 대상이 Process인 경우
-            //    else if (_clipboard.ProcessModel is not null)
-            //    {
-            //        var processModel = _clipboard.ProcessModel.CloneData();
-            //        processModel.ParentGroup = group;
-            //        group.Processes.Add(processModel);
-
-            //        treeViewItem = this.DeepCopyTreeViewItem(_clipboard.ItemNode);
-            //        treeViewItem.Header = processModel;
-            //        treeViewItem.DataContext = processModel;
-            //        treeViewItem.ItemContainerStyle = this.Resources["sTreeViewItem"] as Style;
-            //        _tempRightClickNode.Items.Add(treeViewItem);
-            //    }
-            //}
-            //// Process node에 붙여넣기 한 경우
-            //else if (_tempRightClickNode.DataContext is Process process)
-            //{
-            //    TreeViewItem treeViewItem;
-
-            //    // 붙여넣기 대상이 Group인 경우
-            //    if (_clipboard.GroupModel is not null)
-            //    {
-            //        var groupModel = _clipboard.GroupModel.CloneData();
-            //        foreach (var p in groupModel.Processes)
-            //            p.ParentGroup = groupModel;
-            //        if (_clipboard.GroupModel.ParentGroup is not null)
-            //        {
-            //            groupModel.ParentGroup = _clipboard.GroupModel.ParentGroup.CloneData();
-            //        }
-            //        if (_clipboard.GroupModel.ParentGroup is not null &&
-            //            _clipboard.GroupModel.ParentGroup.ParentGroup is not null)
-            //        {
-            //            groupModel.ParentGroup.ParentGroup = _clipboard.GroupModel.ParentGroup.ParentGroup.CloneData();
-            //        }
-            //        process.ParentGroup.NestedGroup.Add(groupModel);
-
-            //        treeViewItem = this.DeepCopyTreeViewItem(_clipboard.ItemNode);
-            //        treeViewItem.Header = groupModel;
-            //        treeViewItem.DataContext = groupModel;
-            //        treeViewItem.ItemContainerStyle = this.Resources["sTreeViewItem"] as Style;
-            //        ((TreeViewItem)(_tempRightClickNode.Parent)).Items.Add(treeViewItem);
-            //    }
-            //    // 붙여넣기 대상이 Process인 경우
-            //    else if (_clipboard.ProcessModel is not null)
-            //    {
-            //        var processModel = _clipboard.ProcessModel.CloneData();
-            //        processModel.ParentGroup = process.ParentGroup;
-            //        process.ParentGroup.Processes.Add(processModel);
-
-            //        treeViewItem = this.DeepCopyTreeViewItem(_clipboard.ItemNode);
-            //        treeViewItem.Header = processModel;
-            //        treeViewItem.DataContext = processModel;
-            //        treeViewItem.ItemContainerStyle = this.Resources["sTreeViewItem"] as Style;
-            //        ((TreeViewItem)(_tempRightClickNode.Parent)).Items.Add(treeViewItem);
-            //    }
-            //}
         }
 
         private void xDeleteMenu_Click(object sender, RoutedEventArgs e)
@@ -1598,6 +1375,13 @@ namespace XmlDiffLib
             return newItem;
         }
 
+        /// <summary>
+        /// 하위 Process 노드 id의 Group id를 해당 그룹 id기준으로 변경 <para/>
+        /// 아이디 체계<para/>
+        /// Group id : {Group id}.000000<para/>
+        /// Process id : {Group id}.{Process id}
+        /// </summary>
+        /// <param name="groupTreeViewItem"></param>
         private void ChangeGroupId(TreeViewItem groupTreeViewItem)
         {
             var groupId = groupTreeViewItem.Tag.ToString().Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries)[0];
@@ -1608,6 +1392,7 @@ namespace XmlDiffLib
 
                 if (item.Header is Group group)
                 {
+                    // 그룹 아이디 생성
                     group.Id = this.GenerationId(groupTreeViewItem, true);
                     item.Tag = group.Id;
                     if(item.Items.Count > 0)
