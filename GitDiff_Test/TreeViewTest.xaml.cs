@@ -32,7 +32,7 @@ namespace GitDiff_Test
 
         private void TreeViewTest_Loaded(object sender, RoutedEventArgs e)
         {
-            this.LoadXmlFile2("C:\\Users\\banaple_43\\Documents\\카카오톡 받은 파일\\file111.xml");
+            this.LoadXmlFile2("C:\\Users\\banaple_43\\Documents\\file111.xml");
         }
 
         public void LoadXmlFile2(string filePath)

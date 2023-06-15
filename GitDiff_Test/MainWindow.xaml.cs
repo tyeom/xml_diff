@@ -39,7 +39,7 @@ namespace GitDiff_Test
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             // Git repository 경로 설정
-            string repositoryPath = @"C:\Users\banaple_43\Documents\카카오톡 받은 파일";
+            string repositoryPath = @"C:\Users\Documents\카카오톡 받은 파일";
 
             // Git repository 열기
             using (var repo = new Repository(repositoryPath))

@@ -8,15 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="file1.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\XmlDiffLib\XmlDiffLib.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="file1.xml" />
   </ItemGroup>
 
 </Project>
