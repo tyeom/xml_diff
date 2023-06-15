@@ -125,9 +125,24 @@ namespace XmlDiffLib
 
         public static void CompareGroups2(Group from, Group to)
         {
+            if (from is not null &&
+                from.IsEmpty is true &&
+                from.MatchingGroupByTo is not null &&
+                from.MatchingGroupByTo.IsEmpty is true)
+            {
+                from.IsExpanded = false;
+            }
+            if (to is not null &&
+                to.IsEmpty is true &&
+                to.DiffFromGroup is not null &&
+                to.DiffFromGroup.IsEmpty is true)
+            {
+                to.IsExpanded = false;
+            }
+
             from.IsChecked = true;
 
-            if (to == null)
+            if (from.IsAdded is false && to == null)
             {
                 from.Without = true;
                 return;
@@ -426,9 +441,12 @@ namespace XmlDiffLib
 
             for (int i = 0; i < fromNestedGroups.Count; i++)
             {
+                var fromGroup = fromNestedGroups[i];
+                var toNestedGroup = toNestedGroups.FirstOrDefault(p => p.Id == fromGroup.Id);
+
                 if (i < toNestedGroups.Count)
                 {
-                    CompareGroups2(fromNestedGroups[i], toNestedGroups[i]);
+                    CompareGroups2(fromNestedGroups[i], toNestedGroup);
                 }
                 else
                 {

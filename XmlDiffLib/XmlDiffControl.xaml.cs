@@ -343,6 +343,7 @@ namespace XmlDiffLib
                         var emptyTreeViewItemTarget = this.DeepCopyTreeViewItem(treeViewItem, null, null, true);
                         Group emptyGroup = new() { IsEmpty = true, MatchingGroupByTo = treeViewItem.Header as Group };
                         (treeViewItem.Header as Group).DiffFromGroup = emptyGroup;
+                        emptyGroup.IsExpanded = emptyGroup.MatchingGroupByTo.IsExpanded;
                         emptyTreeViewItemTarget.Header = emptyGroup;
                         emptyTreeViewItemTarget.DataContext = emptyGroup;
                         emptyTreeViewItemTarget.ItemContainerStyle = this.Resources["sTreeViewItem"] as Style;
@@ -396,6 +397,7 @@ namespace XmlDiffLib
                         var emptyTreeViewItemTarget = this.DeepCopyTreeViewItem(treeViewItem, null, null, true);
                         Group emptyGroup = new() { IsEmpty = true, DiffFromGroup = treeViewItem.Header as Group };
                         (treeViewItem.Header as Group).MatchingGroupByTo = emptyGroup;
+                        emptyGroup.IsExpanded = emptyGroup.DiffFromGroup.IsExpanded;
                         emptyTreeViewItemTarget.Header = emptyGroup;
                         emptyTreeViewItemTarget.DataContext = emptyGroup;
                         emptyTreeViewItemTarget.ItemContainerStyle = this.Resources["sTreeViewItem"] as Style;
@@ -451,6 +453,7 @@ namespace XmlDiffLib
                         {
                             var group = emptyTreeViewItemTarget.Header as Group;
                             group.IsEmpty = true;
+                            group.IsExpanded = treeViewItem.IsExpanded;
                             parentGroup.NestedGroup.Add(group);
                         }
                         else
@@ -647,6 +650,26 @@ namespace XmlDiffLib
         private void xTreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var rightClickTreeViewItem = this.FindAncestor<TreeViewItem>((DependencyObject)e.OriginalSource);
+            if (rightClickTreeViewItem is null) return;
+
+            if(rightClickTreeViewItem.Header is Group group)
+            {
+                group.IsExpanded = rightClickTreeViewItem.IsExpanded;
+                if (DiffType == diffType.from)
+                {
+                    if (ExpanderChanged is not null)
+                    {
+                        ExpanderChanged(this, group, group.MatchingGroupByTo);
+                    }
+                }
+                else
+                {
+                    if (ExpanderChanged is not null)
+                    {
+                        ExpanderChanged(this, group.DiffFromGroup, group);
+                    }
+                }
+            }
 
             if (DiffType == diffType.to)
             {
@@ -1290,6 +1313,14 @@ namespace XmlDiffLib
                 if (isEmpty)
                 {
                     cloneGroup.IsEmpty = true;
+                    if (group.MatchingGroupByTo is not null)
+                    {
+                        cloneGroup.IsExpanded = group.MatchingGroupByTo.IsExpanded;
+                    }
+                    else if (group.DiffFromGroup is not null)
+                    {
+                        cloneGroup.IsExpanded = group.DiffFromGroup.IsExpanded;
+                    }
                 }
                 cloneGroup.ParentGroup = parentGroup;
                 cloneGroup.ParentTreeViewItem = parentTreeViewItem;

@@ -172,10 +172,12 @@ namespace XmlDiffLib.Extensions
                 if ((treeViewItem.Header as Group).DiffFromGroup is not null)
                 {
                     (treeViewItem.Header as Group).DiffFromGroup.MatchingGroupByTo = emptyGroup;
+                    emptyGroup.IsExpanded = (treeViewItem.Header as Group).DiffFromGroup.IsExpanded;
                 }
                 if ((treeViewItem.Header as Group).MatchingGroupByTo is not null)
                 {
                     (treeViewItem.Header as Group).MatchingGroupByTo.DiffFromGroup = emptyGroup;
+                    emptyGroup.IsExpanded = (treeViewItem.Header as Group).MatchingGroupByTo.IsExpanded;
                 }
 
                 emptyGroup.NestedGroup = new();
@@ -215,10 +217,12 @@ namespace XmlDiffLib.Extensions
                         if ((emptyTreeViewItem.Header as Group).DiffFromGroup is not null)
                         {
                             (emptyTreeViewItem.Header as Group).DiffFromGroup.MatchingGroupByTo = nestedGroup;
+                            nestedGroup.IsExpanded = (treeViewItem.Header as Group).DiffFromGroup.IsExpanded;
                         }
                         if ((emptyTreeViewItem.Header as Group).MatchingGroupByTo is not null)
                         {
                             (emptyTreeViewItem.Header as Group).MatchingGroupByTo.DiffFromGroup = nestedGroup;
+                            nestedGroup.IsExpanded = (treeViewItem.Header as Group).MatchingGroupByTo.IsExpanded;
                         }
 
                         nestedGroup.NestedGroup = new();
