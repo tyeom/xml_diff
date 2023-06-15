@@ -448,7 +448,7 @@
                       PreviewMouseMove="xTreeView_PreviewMouseMove"
                       Drop="xTreeView_Drop">
                 <TreeView.ContextMenu>
-                    <ContextMenu>
+                    <ContextMenu Opened="ContextMenu_Opened">
                         <MenuItem x:Name="xSaveMenu"
                                   Header="Save"
                                   Click="xSaveMenu_Click"/>
@@ -456,9 +456,9 @@
                         <MenuItem x:Name="xCopyMenu"
                                   Header="Copy"
                                   Click="xCopyMenu_Click"/>
-                        <MenuItem x:Name="PasteMenu"
+                        <MenuItem x:Name="xPasteMenu"
                                   Header="Paste"
-                                  Click="PasteMenu_Click"/>
+                                  Click="xPasteMenu_Click"/>
                         <MenuItem x:Name="xDeleteMenu"
                                   Header="Delete"
                                   Click="xDeleteMenu_Click"/>

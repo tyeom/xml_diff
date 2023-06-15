@@ -44,7 +44,7 @@ namespace XmlDiffLib
         private Root? _rootModel;
         private static Root?[] diffRootArr = new Root[2];
         private static TreeView?[] diffTreeViewArr = new TreeView[2];
-        private Clipboard? _clipboard;
+        private static Clipboard? _clipboard;
         private TreeViewItem? _tempRightClickNode;
 
         private XmlDiffViewModel _xmlDiffViewModel;
@@ -558,7 +558,6 @@ namespace XmlDiffLib
             return process;
         }
 
-
         private void SerializeToFile<T>(string xmlFilePath, T objectToSerialize) where T : class
         {
             using (var writer = new StreamWriter(xmlFilePath))
@@ -731,28 +730,28 @@ namespace XmlDiffLib
             }
         }
 
-        private static TreeViewItem draggedItem;
+        private static TreeViewItem _draggedItem;
         private void xTreeView_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            draggedItem = this.FindAncestor<TreeViewItem>((DependencyObject)e.OriginalSource);
+            _draggedItem = this.FindAncestor<TreeViewItem>((DependencyObject)e.OriginalSource);
         }
 
         private void xTreeView_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (draggedItem == null || e.LeftButton != MouseButtonState.Pressed)
+            if (_draggedItem == null || e.LeftButton != MouseButtonState.Pressed)
                 return;
 
-            DragDrop.DoDragDrop(draggedItem, draggedItem, DragDropEffects.Move);
+            DragDrop.DoDragDrop(_draggedItem, _draggedItem, DragDropEffects.Move);
         }
 
         private void xTreeView_Drop(object sender, DragEventArgs e)
         {
             bool isSameTree = false;
 
-            if (draggedItem == null)
+            if (_draggedItem == null)
                 return;
 
-            TreeView fromTreeView = this.FindAncestor<TreeView>(draggedItem as DependencyObject);
+            TreeView fromTreeView = this.FindAncestor<TreeView>(_draggedItem as DependencyObject);
             TreeView toTreeView = this.FindAncestor<TreeView>((DependencyObject)e.OriginalSource);
             if(fromTreeView == toTreeView)
             {
@@ -763,11 +762,11 @@ namespace XmlDiffLib
 
             if (targetItem != null)
             {
-                if (draggedItem is null)
+                if (_draggedItem is null)
                     return;
 
                 // 드롭 위치를 변경합니다.
-                TreeViewItem parentItem = this.FindAncestor<TreeViewItem>(draggedItem as DependencyObject);
+                TreeViewItem parentItem = this.FindAncestor<TreeViewItem>(_draggedItem as DependencyObject);
 
                 if (parentItem is null ||
                     targetItem is null) return;
@@ -846,7 +845,7 @@ namespace XmlDiffLib
                 this.MoveNode(parentItem, targetItem);
             }
 
-            draggedItem = null;
+            _draggedItem = null;
         }
 
         /// <summary>
@@ -1290,7 +1289,7 @@ namespace XmlDiffLib
             _clipboard.ItemNode = _tempRightClickNode;
         }
 
-        private void PasteMenu_Click(object sender, RoutedEventArgs e)
+        private void xPasteMenu_Click(object sender, RoutedEventArgs e)
         {
             if(_clipboard.ItemNode is null || _tempRightClickNode is null) return;
 
@@ -1299,7 +1298,18 @@ namespace XmlDiffLib
 
         private void xDeleteMenu_Click(object sender, RoutedEventArgs e)
         {
-            _tempRightClickNode.CurrentRemoveItem();
+            if (_tempRightClickNode is null) return;
+
+            if(_tempRightClickNode.Tag is null)
+            {
+                MessageBox.Show("The ID of the node could not be found.");
+                return;
+            }
+
+            if(MessageBox.Show($"\"{_tempRightClickNode.Tag.ToString()}\" Are you sure you want to delete the node?",
+                "Delete",
+                MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                _tempRightClickNode.CurrentRemoveItem();
         }
 
         private TreeViewItem DeepCopyTreeViewItem(TreeViewItem sourceItem, TreeViewItem? parentTreeViewItem, Group? parentGroup, bool isEmpty = false)
@@ -1449,6 +1459,18 @@ namespace XmlDiffLib
             {
                 saveFilePath = saveFileDialog.FileName;
                 this.SaveXmlFile(saveFilePath);
+            }
+        }
+
+        private void ContextMenu_Opened(object sender, RoutedEventArgs e)
+        {
+            if (_clipboard is null || _clipboard.ItemNode is null)
+            {
+                this.xPasteMenu.IsEnabled = false;
+            }
+            else
+            {
+                this.xPasteMenu.IsEnabled = true;
             }
         }
     }
