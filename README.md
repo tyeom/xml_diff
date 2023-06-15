@@ -1,5 +1,5 @@
 # xml_diff
-S사 내부 프로젝트 XML file 전용 형상관리 GUI Program
+### S사 내부 프로젝트 XML file 전용 형상관리 GUI Program
 
 #### 1차 개발 : Xml file diff [master <--> branch] 가시화 툴 개발
 #### 2차 개발 : Xml file git 형상관리 전용 히스토리 그래프 표시 기능 추가
