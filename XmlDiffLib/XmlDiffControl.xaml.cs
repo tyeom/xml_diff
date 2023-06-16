@@ -1515,6 +1515,12 @@ namespace XmlDiffLib
 
         private void xSaveMenu_Click(object sender, RoutedEventArgs e)
         {
+            if(this.xTreeView.Items.Count <= 0)
+            {
+                MessageBox.Show("There is no xml file data loaded.");
+                return;
+            }
+
             string? saveFilePath = null;
             SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = "Xml files (*.xml)|*.xml";
