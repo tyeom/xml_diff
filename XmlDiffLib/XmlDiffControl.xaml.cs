@@ -1283,7 +1283,17 @@ namespace XmlDiffLib
 
         private void xCopyMenu_Click(object sender, RoutedEventArgs e)
         {
-            if (_tempRightClickNode is null) return;
+            if (_tempRightClickNode is null || _tempRightClickNode.Tag is null) return;
+            
+            if (_tempRightClickNode is not null && _tempRightClickNode.Header is Group group) {
+                if (group.IsEmpty)
+                    return;
+            }
+            if (_tempRightClickNode is not null && _tempRightClickNode.Header is Process porocess)
+            {
+                if (porocess.IsEmpty)
+                    return;
+            }
 
             _clipboard = new();
             _clipboard.ItemNode = _tempRightClickNode;
