@@ -3,9 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:xml_diff"
              xmlns:dataContext="clr-namespace:xml_diff.ViewModels"
+             xmlns:converters="clr-namespace:xml_diff.Converters"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
+            <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+            <converters:EnumToVisibilityConverter x:Key="EnumToVisibilityConverter"/>
+            
             <dataContext:ViewModelProvider x:Key="ViewModelProvider" />
 
             <DataTemplate DataType="{x:Type dataContext:Diff01ViewModel}">

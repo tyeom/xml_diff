@@ -9,6 +9,7 @@ using XmlDiffLib.Models;
 
 namespace XmlDiffLib.ViewModels
 {
+    [Obsolete("사용안함", true)]
     public class XmlDiffViewModel : INotifyPropertyChanged
     {
         private Root? _root;

@@ -448,7 +448,8 @@
                       PreviewMouseMove="xTreeView_PreviewMouseMove"
                       Drop="xTreeView_Drop">
                 <TreeView.ContextMenu>
-                    <ContextMenu Opened="ContextMenu_Opened">
+                    <ContextMenu x:Name="xTreeViewContextMenu"
+                                 Opened="xTreeViewContextMenu_Opened">
                         <MenuItem x:Name="xSaveMenu"
                                   Header="Save"
                                   Click="xSaveMenu_Click"/>

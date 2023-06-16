@@ -25,45 +25,9 @@ namespace xml_diff
     /// </summary>
     public partial class MainWindow : Window
     {
-        public delegate void XmlDataInitEventHandler();
-        public event XmlDataInitEventHandler XmlDataInit;
-
-        public delegate void FromFileLoadedEventHandler(string filePath);
-        public event FromFileLoadedEventHandler FromFileLoaded;
-
-        public delegate void ToFileLoadedEventHandler(string filePath);
-        public event ToFileLoadedEventHandler ToFileLoaded;
-
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void xBrowse_Click(object sender, RoutedEventArgs e)
-        {
-            string? xmlFilePath = null;
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Xml files (*.xml)|*.xml";
-            if (openFileDialog.ShowDialog() == true)
-            {
-                this.xPath.Text = openFileDialog.FileName;
-                xmlFilePath = openFileDialog.FileName;
-
-                if(XmlDataInit is not null)
-                {
-                    XmlDataInit();
-                }
-
-                if(FromFileLoaded is not null)
-                {
-                    FromFileLoaded(xmlFilePath);
-                }
-
-                if (ToFileLoaded is not null)
-                {
-                    ToFileLoaded(xmlFilePath);
-                }
-            }
         }
     }
 }

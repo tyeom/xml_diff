@@ -18,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Serialization;
+using xml_diff.ViewModels;
 
 namespace xml_diff
 {
@@ -32,13 +33,13 @@ namespace xml_diff
 
             if (App.Current.MainWindow is MainWindow mainWindow)
             {
-                mainWindow.XmlDataInit += () =>
+                (App.Current.Resources["ViewModelProvider"] as ViewModelProvider)!.MainViewModel!.XmlDataInit += () =>
                 {
                     this.xXmlDiff.XmlDataInit();
                 };
 
-                mainWindow.ToFileLoaded += (filePath) => {
-                    this.xXmlDiff.LoadXmlFile2(filePath, XmlDiffLib.XmlDiffControl.diffType.to);
+                (App.Current.Resources["ViewModelProvider"] as ViewModelProvider)!.MainViewModel!.FromFileLoaded += (filePath) => {
+                    this.xXmlDiff.LoadXmlFile2(filePath, XmlDiffLib.XmlDiffControl.EDiffType.to);
                 };
             }
         }
@@ -59,7 +60,7 @@ namespace xml_diff
 
             this.xPath.Text = xmlFilePath;
 
-            this.xXmlDiff.LoadXmlFile2(xmlFilePath, XmlDiffLib.XmlDiffControl.diffType.to);
+            this.xXmlDiff.LoadXmlFile2(xmlFilePath, XmlDiffLib.XmlDiffControl.EDiffType.to);
         }
 
         private void xXmlDiff_ExpanderChanged(object sender, XmlDiffLib.Models.Group fromGroup, XmlDiffLib.Models.Group matchingGroupByTo)

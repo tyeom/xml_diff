@@ -4,12 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:xml_diff"
-        DataContext="{Binding . , Mode=OneTime, Source={StaticResource ViewModelProvider}}"
+        DataContext="{Binding MainViewModel, Mode=OneTime, Source={StaticResource ViewModelProvider}}"
         mc:Ignorable="d"
         Title="XML file diff"
-        Height="1000" Width="800">
+        Height="1200" Width="950">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -19,33 +20,69 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="0"
+        <Menu Grid.Row="0"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              Height="30">
+            <MenuItem Header="_File"
+                      Width="50"
+                      Height="30">
+                <MenuItem x:Name="xCloseMenu"
+                          Header="_Close"
+                          Command="{Binding CloseCommand}"/>
+            </MenuItem>
+            <Separator Width="10"/>
+            <MenuItem Header="_Mode"
+                      Width="60"
+                      Height="30">
+                <MenuItem x:Name="xWriteMenu"
+                          Header="_Write"
+                          IsChecked="{Binding ModeType,
+                                      Converter={StaticResource EnumToBooleanConverter},
+                                      ConverterParameter=Write}"
+                          Command="{Binding ModeCommand}"
+                          CommandParameter="Write"/>
+                <MenuItem x:Name="xReadonlyMenu"
+                          Header="_Readonly"
+                          IsChecked="{Binding ModeType,
+                                      Converter={StaticResource EnumToBooleanConverter},
+                                      ConverterParameter=ReadOnly}"
+                          Command="{Binding ModeCommand}"
+                          CommandParameter="ReadOnly"/>
+            </MenuItem>
+        </Menu>
+
+        <StackPanel Grid.Row="1"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
-                    Orientation="Horizontal">
+                    Orientation="Horizontal"
+                    Visibility="{Binding ModeType,
+                                 Converter={StaticResource EnumToVisibilityConverter},
+                                 ConverterParameter=Write}">
             <TextBlock Text="File : "
                        FontWeight="Bold"
                        Margin="10"/>
             <TextBlock x:Name="xPath"
+                       Text="{Binding Path}"
                        Margin="10"/>
             <Button x:Name="xBrowse"
                     Width="70"
                     Height="25"
                     Content="Browse.."
-                    Click="xBrowse_Click"
+                    Command="{Binding BrowseCommand}"
                     Margin="10"/>
         </StackPanel>
 
-        <Rectangle Grid.Row="1"
+        <Rectangle Grid.Row="2"
                    Grid.Column="0"
                    Grid.ColumnSpan="2"
                    Height="1"
                    Fill="#FF000000"/>
 
-        <ContentControl Grid.Row="2"
+        <ContentControl Grid.Row="3"
                         Grid.Column="0"
                         Content="{Binding Diff01}"/>
-        <ContentControl Grid.Row="2"
+        <ContentControl Grid.Row="3"
                         Grid.Column="1"
                         Content="{Binding Diff02}"/>
     </Grid>

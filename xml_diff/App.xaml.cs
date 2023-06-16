@@ -32,11 +32,6 @@ namespace xml_diff
                 (SolidColorBrush)(new BrushConverter().ConvertFrom(ConfigurationManager.AppSettings["DiffColor"]!))!;
             ((SharedDataViewModel)((App.Current.Resources["ViewModelProvider"] as ViewModelProvider)!.SharedDataViewModel!)).UncheckedColor =
                 (SolidColorBrush)(new BrushConverter().ConvertFrom(ConfigurationManager.AppSettings["UncheckedColor"]!))!;
-
-            (App.Current.Resources["ViewModelProvider"] as ViewModelProvider)!.Diff01 =
-                new Diff01ViewModel();
-            (App.Current.Resources["ViewModelProvider"] as ViewModelProvider)!.Diff02 =
-                new Diff02ViewModel();
         }
     }
 }

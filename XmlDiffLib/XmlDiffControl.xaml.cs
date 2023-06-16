@@ -32,10 +32,16 @@ namespace XmlDiffLib
     /// </summary>
     public partial class XmlDiffControl : UserControl
     {
-        public enum diffType
+        public enum EDiffType
         {
             from,
             to
+        }
+
+        public enum EModeType
+        {
+            Write,
+            ReadOnly
         }
 
         public delegate void ExpanderChangedEventHandler(object sender, Group fromGroup, Group matchingGroupByTo);
@@ -47,29 +53,41 @@ namespace XmlDiffLib
         private static Clipboard? _clipboard;
         private TreeViewItem? _tempRightClickNode;
 
-        private XmlDiffViewModel _xmlDiffViewModel;
+        //private XmlDiffViewModel _xmlDiffViewModel;
 
         public XmlDiffControl()
         {
             InitializeComponent();
 
-            _xmlDiffViewModel = new XmlDiffViewModel();
-            this.DataContext = _xmlDiffViewModel;
+            //_xmlDiffViewModel = new XmlDiffViewModel();
+            //this.DataContext = _xmlDiffViewModel;
 
             TreeViewExtensions.TreeViewItemStyle = this.Resources["sTreeViewItem"] as Style;
         }
 
-        public diffType DiffType
+        public EDiffType DiffType
         {
-            get { return (diffType)base.GetValue(DiffTypeProperty); }
+            get { return (EDiffType)base.GetValue(DiffTypeProperty); }
             set { base.SetValue(DiffTypeProperty, value); }
         }
 
         public static readonly DependencyProperty DiffTypeProperty =
           DependencyProperty.Register("DiffType",
-              typeof(diffType),
+              typeof(EDiffType),
               typeof(XmlDiffControl),
-              new PropertyMetadata(diffType.from));
+              new PropertyMetadata(EDiffType.from));
+
+        public EModeType Mode
+        {
+            get { return (EModeType)base.GetValue(ModeProperty); }
+            set { base.SetValue(ModeProperty, value); }
+        }
+
+        public static readonly DependencyProperty ModeProperty =
+          DependencyProperty.Register("Mode",
+              typeof(EModeType),
+              typeof(XmlDiffControl),
+              new PropertyMetadata(EModeType.Write, OnModeChanged));
 
         public bool OnlyProcessDisplay
         {
@@ -143,7 +161,7 @@ namespace XmlDiffLib
               typeof(XmlDiffControl),
               new FrameworkPropertyMetadata(Double.NaN, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnScrollVerticalOffsetChanged));
 
-        public void LoadXmlFile(string filePath, diffType diffType)
+        public void LoadXmlFile(string filePath, EDiffType diffType)
         {
             try
             {
@@ -167,10 +185,10 @@ namespace XmlDiffLib
                 //    Console.WriteLine("Value: " + value);
                 //}
 
-                _xmlDiffViewModel.FilePath = filePath;
+                //_xmlDiffViewModel.FilePath = filePath;
 
                 _rootModel = root;
-                if (diffType == diffType.from)
+                if (diffType == EDiffType.from)
                 {
                     diffRootArr[0] = root;
                 }
@@ -186,7 +204,7 @@ namespace XmlDiffLib
                     XmlDiffHelper.Diff2(diffRootArr[0], diffRootArr[1]);
                 }
 
-                _xmlDiffViewModel.Root = root;
+                //_xmlDiffViewModel.Root = root;
             }
             catch
             {
@@ -196,6 +214,8 @@ namespace XmlDiffLib
 
         public void XmlDataInit()
         {
+            this.xTreeView.Items.Clear();
+
             _rootModel = null;
 
             diffRootArr[0] = null;
@@ -205,7 +225,7 @@ namespace XmlDiffLib
             diffTreeViewArr[1] = null;
         }
 
-        public void LoadXmlFile2(string filePath, diffType diffType)
+        public void LoadXmlFile2(string filePath, EDiffType diffType)
         {
             try
             {
@@ -236,9 +256,9 @@ namespace XmlDiffLib
                     root.Groups.Add(group);
                 }
 
-                _xmlDiffViewModel.FilePath = filePath;
+                //_xmlDiffViewModel.FilePath = filePath;
 
-                if (diffType == diffType.from)
+                if (diffType == EDiffType.from)
                 {
                     diffRootArr[0] = root;
                     diffTreeViewArr[0] = this.xTreeView;
@@ -571,6 +591,14 @@ namespace XmlDiffLib
             }
         }
 
+        public static void OnModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            XmlDiffControl? ctl = d as XmlDiffControl;
+            if (ctl == null) return;
+
+            ctl.XmlDataInit();
+        }
+
         public static void OnScrollVerticalOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             XmlDiffControl? ctl = d as XmlDiffControl;
@@ -643,18 +671,28 @@ namespace XmlDiffLib
 
         private void TreeView_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
+            if (Mode == EModeType.ReadOnly)
+            {
+                return;
+            }
+
             _tempRightClickNode = this.FindAncestor<TreeViewItem>((DependencyObject)e.OriginalSource);
         }
 
         private void xTreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (Mode == EModeType.ReadOnly)
+            {
+                return;
+            }
+
             var rightClickTreeViewItem = this.FindAncestor<TreeViewItem>((DependencyObject)e.OriginalSource);
             if (rightClickTreeViewItem is null) return;
 
             if(rightClickTreeViewItem.Header is Group group)
             {
                 group.IsExpanded = rightClickTreeViewItem.IsExpanded;
-                if (DiffType == diffType.from)
+                if (DiffType == EDiffType.from)
                 {
                     if (ExpanderChanged is not null)
                     {
@@ -670,7 +708,7 @@ namespace XmlDiffLib
                 }
             }
 
-            if (DiffType == diffType.to)
+            if (DiffType == EDiffType.to)
             {
                 if (rightClickTreeViewItem is not null &&
                     rightClickTreeViewItem.DataContext is Process toProcess)
@@ -713,7 +751,7 @@ namespace XmlDiffLib
             if(sender is ToggleButton toggleBtn &&
                 toggleBtn.DataContext is Group group)
             {
-                if (DiffType == diffType.from)
+                if (DiffType == EDiffType.from)
                 {
                     if (ExpanderChanged is not null)
                     {
@@ -733,11 +771,21 @@ namespace XmlDiffLib
         private static TreeViewItem _draggedItem;
         private void xTreeView_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (Mode == EModeType.ReadOnly)
+            {
+                return;
+            }
+
             _draggedItem = this.FindAncestor<TreeViewItem>((DependencyObject)e.OriginalSource);
         }
 
         private void xTreeView_PreviewMouseMove(object sender, MouseEventArgs e)
         {
+            if (Mode == EModeType.ReadOnly)
+            {
+                return;
+            }
+
             if (_draggedItem == null || e.LeftButton != MouseButtonState.Pressed)
                 return;
 
@@ -746,6 +794,11 @@ namespace XmlDiffLib
 
         private void xTreeView_Drop(object sender, DragEventArgs e)
         {
+            if (Mode == EModeType.ReadOnly)
+            {
+                return;
+            }
+
             bool isSameTree = false;
 
             if (_draggedItem == null)
@@ -1058,7 +1111,7 @@ namespace XmlDiffLib
                     this.ChangeGroupId(newTreeViewItem);
                 }
 
-                if(DiffType == diffType.from)
+                if(DiffType == EDiffType.from)
                 {
                     diffRootArr[0].Groups.Insert(targetIdx, newTreeViewItem.Header as Group);
                 }
@@ -1147,7 +1200,7 @@ namespace XmlDiffLib
                         this.ChangeGroupId(newTreeViewItem);
                     }
 
-                    if (DiffType == diffType.from)
+                    if (DiffType == EDiffType.from)
                     {
                         diffRootArr[0].Groups.Insert(targetIdx, newTreeViewItem.Header as Group);
                     }
@@ -1254,7 +1307,7 @@ namespace XmlDiffLib
             if (diffRootArr[0] is not null &&
                     diffRootArr[1] is not null)
             {
-                if (DiffType == diffType.from)
+                if (DiffType == EDiffType.from)
                 {
                     this.SynchronizeTreeViewByRight();
                 }
@@ -1472,8 +1525,19 @@ namespace XmlDiffLib
             }
         }
 
-        private void ContextMenu_Opened(object sender, RoutedEventArgs e)
+        private void xTreeViewContextMenu_Opened(object sender, RoutedEventArgs e)
         {
+            if (Mode == EModeType.ReadOnly)
+            {
+                ((ContextMenu)sender).IsEnabled = false;
+                ((ContextMenu)sender).IsOpen = false;
+                return;
+            }
+            else
+            {
+                ((ContextMenu)sender).IsEnabled = true;
+            }
+
             if (_clipboard is null || _clipboard.ItemNode is null)
             {
                 this.xPasteMenu.IsEnabled = false;

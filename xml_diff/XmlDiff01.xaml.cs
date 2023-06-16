@@ -31,13 +31,13 @@ namespace xml_diff
 
             if(App.Current.MainWindow is MainWindow mainWindow)
             {
-                mainWindow.XmlDataInit += () =>
+                (App.Current.Resources["ViewModelProvider"] as ViewModelProvider)!.MainViewModel!.XmlDataInit += () =>
                 {
                     this.xXmlDiff.XmlDataInit();
                 };
 
-                mainWindow.FromFileLoaded += (filePath) => {
-                    this.xXmlDiff.LoadXmlFile2(filePath, XmlDiffLib.XmlDiffControl.diffType.from);
+                (App.Current.Resources["ViewModelProvider"] as ViewModelProvider)!.MainViewModel!.FromFileLoaded += (filePath) => {
+                    this.xXmlDiff.LoadXmlFile2(filePath, XmlDiffLib.XmlDiffControl.EDiffType.from);
                 };
             }
         }
@@ -58,7 +58,7 @@ namespace xml_diff
 
             this.xPath.Text = xmlFilePath;
 
-            this.xXmlDiff.LoadXmlFile2(xmlFilePath, XmlDiffLib.XmlDiffControl.diffType.from);
+            this.xXmlDiff.LoadXmlFile2(xmlFilePath, XmlDiffLib.XmlDiffControl.EDiffType.from);
 
 
         }

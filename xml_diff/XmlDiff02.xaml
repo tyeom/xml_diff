@@ -17,31 +17,53 @@
 
         <StackPanel Grid.Row="0"
                     Orientation="Horizontal">
-            <TextBlock Visibility="Collapsed"
+            <TextBlock Visibility="{Binding Mode,
+                                    Converter={StaticResource EnumToVisibilityConverter},
+                                    ConverterParameter=ReadOnly}"
                        Text="To 파일 : "
                        FontWeight="Bold"
-                       Margin="0, 0, 10, 0"/>
+                       Margin="10"/>
+            
             <TextBlock x:Name="xPath"
-                       Visibility="Collapsed"
-                       Margin="0, 0, 10, 0"/>
+                       Visibility="{Binding Mode,
+                                    Converter={StaticResource EnumToVisibilityConverter},
+                                    ConverterParameter=ReadOnly}"
+                       Margin="10"/>
+            
             <Button x:Name="xBrowse"
-                    Visibility="Collapsed"
+                    Visibility="{Binding Mode,
+                                    Converter={StaticResource EnumToVisibilityConverter},
+                                    ConverterParameter=ReadOnly}"
                     Width="70"
                     Height="25"
                     Content="Browse.."
-                    Click="xBrowse_Click"/>
+                    Click="xBrowse_Click"
+                    Margin="10"/>
+            
+            <Rectangle Fill="#FF000000"
+                       Visibility="{Binding Mode,
+                                    Converter={StaticResource EnumToVisibilityConverter},
+                                    ConverterParameter=ReadOnly}"
+                       Width="1"
+                       Margin="10"/>
+            
             <Button x:Name="xSave"
                     Width="70"
                     Height="25"
                     Content="Save"
                     Margin="10"
                     Click="xSave_Click"/>
+            
             <ToggleButton x:Name="xOnlyProcessDisplay"
                           Width="100"
                           Height="25"
                           IsChecked="False"
                           Content="Process만 보기"
                           Margin="10"/>
+
+            <Rectangle Fill="#FF000000"
+                       Width="1"
+                       Margin="10"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1"
@@ -72,6 +94,7 @@
                                 DiffColor="{Binding SharedDataViewModel.DiffColor, Source={StaticResource ViewModelProvider}, Mode=TwoWay}"
                                 UncheckedColor="{Binding SharedDataViewModel.UncheckedColor , Source={StaticResource ViewModelProvider}, Mode=TwoWay}"
                                 OnlyProcessDisplay="{Binding ElementName=xOnlyProcessDisplay, Path=IsChecked}"
+                                Mode="{Binding Mode}"
                                 ExpanderChanged="xXmlDiff_ExpanderChanged"/>
     </Grid>
 </UserControl>

@@ -9,26 +9,15 @@ namespace xml_diff.ViewModels
 {
     public class ViewModelProvider : ViewModelBase
     {
-        private ViewModelBase? _diff01;
-        private ViewModelBase? _diff02;
+        private MainViewModel _mainViewModel = new();
         private SharedDataViewModel _sharedDataViewModel = new SharedDataViewModel();
 
-        public ViewModelBase? Diff01
+        public MainViewModel? MainViewModel
         {
-            get => _diff01;
+            get => _mainViewModel;
             set
             {
-                _diff01 = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public ViewModelBase? Diff02
-        {
-            get => _diff02;
-            set
-            {
-                _diff02 = value;
+                _mainViewModel = value;
                 OnPropertyChanged();
             }
         }
