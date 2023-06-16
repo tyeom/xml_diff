@@ -10,6 +10,7 @@
 #### ✅ 1차 개발 완료 Features
 
 - [x] Visualization display as xml file difference node
+- [x] difference mode (Readonly), write mode
 - [x] Edit xml node
   - [x] Move mouse drag and drop nodes (delete and add)
   - [x] Copy & Paste (Context Menu)
