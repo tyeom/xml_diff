@@ -24,13 +24,14 @@ using XmlDiffLib.Extensions;
 using static XmlDiffLib.XmlDiffControl;
 using Microsoft.Win32;
 using System.Xml.Linq;
+using System.ComponentModel;
 
 namespace XmlDiffLib
 {
     /// <summary>
     /// XmlDiffControl.xaml에 대한 상호 작용 논리
     /// </summary>
-    public partial class XmlDiffControl : UserControl
+    public partial class XmlDiffControl : UserControl, INotifyPropertyChanged
     {
         public enum EDiffType
         {
@@ -52,6 +53,7 @@ namespace XmlDiffLib
         private static TreeView?[] diffTreeViewArr = new TreeView[2];
         private static Clipboard? _clipboard;
         private TreeViewItem? _tempRightClickNode;
+        private static bool _isDraging = false;
 
         //private XmlDiffViewModel _xmlDiffViewModel;
 
@@ -160,6 +162,19 @@ namespace XmlDiffLib
               typeof(double),
               typeof(XmlDiffControl),
               new FrameworkPropertyMetadata(Double.NaN, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnScrollVerticalOffsetChanged));
+
+        public bool IsDraging
+        {
+            get => _isDraging;
+            set
+            {
+                if(_isDraging != value)
+                {
+                    _isDraging = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public void LoadXmlFile(string filePath, EDiffType diffType)
         {
@@ -671,6 +686,8 @@ namespace XmlDiffLib
 
         private void TreeView_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
+            IsDraging = false;
+
             if (Mode == EModeType.ReadOnly)
             {
                 return;
@@ -789,11 +806,15 @@ namespace XmlDiffLib
             if (_draggedItem == null || e.LeftButton != MouseButtonState.Pressed)
                 return;
 
+            IsDraging = true;
+
             DragDrop.DoDragDrop(_draggedItem, _draggedItem, DragDropEffects.Move);
         }
 
         private void xTreeView_Drop(object sender, DragEventArgs e)
         {
+            IsDraging = false;
+
             if (Mode == EModeType.ReadOnly)
             {
                 return;
@@ -1553,5 +1574,18 @@ namespace XmlDiffLib
                 this.xPasteMenu.IsEnabled = true;
             }
         }
+
+        #region INotifyPropertyChange Implementation
+        public event PropertyChangedEventHandler? PropertyChanged = delegate { };
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChangedEventHandler? handler = this.PropertyChanged;
+
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+        #endregion INotifyPropertyChange Implementation
     }
 }

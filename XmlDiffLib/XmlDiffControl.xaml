@@ -17,125 +17,162 @@
 
         <Style x:Key="sTreeViewItem" TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded}"/>
-                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
 
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type TreeViewItem}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="50"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
+            
 
-                                <!--축소/확장 토글버튼-->
-                                <!--<ToggleButton x:Name="xBtnExpander"
-                                                  Grid.Column="0"
-                                                  Width="25"
-                                                  Height="25"
-                                                  Background="Transparent"
-                                                  TextBlock.FontSize="18"
-                                                  TextBlock.FontWeight="ExtraBold"
-                                                  IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
-                                                  ClickMode="Press" />-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TreeViewItem}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
 
-                                <!--세로 라인-->
-                                <Rectangle x:Name="xVerLn"
-                                           Grid.Column="0"
-                                           Grid.RowSpan="2"
-                                           Width="1"
-                                           Stroke="#FFDCDCDC"
-                                           Margin="0,0,1,0"
-                                           SnapsToDevicePixels="true"
-                                           Fill="White"/>
+                            <!--축소/확장 토글버튼-->
+                            <!--<ToggleButton x:Name="xBtnExpander"
+                                              Grid.Column="0"
+                                              Width="25"
+                                              Height="25"
+                                              Background="Transparent"
+                                              TextBlock.FontSize="18"
+                                              TextBlock.FontWeight="ExtraBold"
+                                              IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                                              ClickMode="Press" />-->
 
-                                <Border Name="xBd"
-                                        Grid.Row="0"
-                                        Grid.Column="1"
-                                        Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                        Padding="{TemplateBinding Padding}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
+                            <!--세로 라인-->
+                            <Rectangle x:Name="xVerLn"
+                                       Grid.Column="0"
+                                       Grid.RowSpan="2"
+                                       Width="1"
+                                       Stroke="#FFDCDCDC"
+                                       Margin="0,0,1,0"
+                                       SnapsToDevicePixels="true"
+                                       Fill="White"/>
 
-                                        <!--<Ellipse x:Name="xEllipse"
-                                             Grid.Column="0"
-                                             Width="80"
-                                             Height="80"
-                                             Stroke="#FF000000"
-                                             StrokeThickness="2"/>-->
-                                        <ContentPresenter x:Name="PART_Header"
-                                                          Grid.Column="0"
-                                                          ContentSource="Header"
-                                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                    </Grid>
-                                </Border>
+                            <Border Name="xBd"
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Padding="{TemplateBinding Padding}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <ItemsPresenter x:Name="ItemsHost"
-                                                Grid.Row="1"
-                                                Grid.Column="1"
-                                                Grid.ColumnSpan="2"
-                                                Margin="0, 0, 0, 10"/>
-                            </Grid>
+                                    <!--<Ellipse x:Name="xEllipse"
+                                                 Grid.Column="0"
+                                                 Width="80"
+                                                 Height="80"
+                                                 Stroke="#FF000000"
+                                                 StrokeThickness="2"/>-->
+                                    <ContentPresenter x:Name="PART_Header"
+                                                      Grid.Column="0"
+                                                      ContentSource="Header"
+                                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                </Grid>
+                            </Border>
+
+                            <ItemsPresenter x:Name="ItemsHost"
+                                            Grid.Row="1"
+                                            Grid.Column="1"
+                                            Grid.ColumnSpan="2"
+                                            Margin="0, 0, 0, 10"/>
+                        </Grid>
 
                         <ControlTemplate.Triggers>
                             <!--마지막 노드는 표시 하지 않음-->
-                                <DataTrigger Binding="{Binding HasItems, RelativeSource={RelativeSource Self}}" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                </DataTrigger>
+                            <DataTrigger Binding="{Binding HasItems, RelativeSource={RelativeSource Self}}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
 
-                                <!--마지막 노드에선 Ellipse Margin 설정, 직접 DataTemplate에서 데이터 위치 조절-->
-                                <!--<DataTrigger Binding="{Binding Path=Items.Count, RelativeSource={RelativeSource Self}}" Value="0">
+                            <!--마지막 노드에선 Ellipse Margin 설정, 직접 DataTemplate에서 데이터 위치 조절-->
+                            <!--<DataTrigger Binding="{Binding Path=Items.Count, RelativeSource={RelativeSource Self}}" Value="0">
                                     <Setter TargetName="xEllipse" Property="Margin" Value="0, 0, 130, 0"/>
                                 </DataTrigger>-->
 
-                                <!--<Trigger Property="IsExpanded" Value="true">
+                            <!--<Trigger Property="IsExpanded" Value="true">
                                     <Setter TargetName="xBtnExpander" Property="Content" Value="-" />
                                 </Trigger>-->
 
-                                <Trigger Property="IsExpanded"
-                                         Value="False">
-                                    <Setter TargetName="ItemsHost"
-                                            Property="Visibility"
-                                            Value="Collapsed"/>
-                                    <!--<Setter TargetName="xBtnExpander" Property="Content" Value="+" />-->
-                                </Trigger>
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="HasHeader"
-                                                   Value="false"/>
-                                        <Condition Property="Width"
-                                                   Value="Auto"/>
-                                    </MultiTrigger.Conditions>
-                                    <Setter TargetName="PART_Header"
-                                            Property="MinWidth"
-                                            Value="75"/>
-                                </MultiTrigger>
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="HasHeader"
-                                                   Value="false"/>
-                                        <Condition Property="Height"
-                                                   Value="Auto"/>
-                                    </MultiTrigger.Conditions>
-                                    <Setter TargetName="PART_Header"
-                                            Property="MinHeight"
-                                            Value="19"/>
-                                </MultiTrigger>
-                                <Trigger Property="IsSelected"
-                                         Value="true">
-                                    <Setter Property="Foreground"
-                                            Value="Blue"/>
+                            <Trigger Property="IsExpanded"
+                                     Value="False">
+                                <Setter TargetName="ItemsHost"
+                                        Property="Visibility"
+                                        Value="Collapsed"/>
+                                <!--<Setter TargetName="xBtnExpander" Property="Content" Value="+" />-->
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="HasHeader"
+                                               Value="false"/>
+                                    <Condition Property="Width"
+                                               Value="Auto"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="PART_Header"
+                                        Property="MinWidth"
+                                        Value="75"/>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="HasHeader"
+                                               Value="false"/>
+                                    <Condition Property="Height"
+                                               Value="Auto"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="PART_Header"
+                                        Property="MinHeight"
+                                        Value="19"/>
+                            </MultiTrigger>
+                            <!--노드 마우스로 드래그 도중 마우스 오버되는 노드를 강조하기 위해
+                            보더 색상을 바꾸려는 의도 트리거인데 잘 안되서 주석처리-->
+                            <!--<MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsDraging,
+                                                                 RelativeSource={RelativeSource FindAncestor,
+                                                                 AncestorType={x:Type local:XmlDiffControl}}}"
+                                               Value="True"/>
+                                    <Condition Binding="{Binding IsMouseOver,
+                                                                 RelativeSource={RelativeSource Self}}"
+                                               Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="xBd"
+                                        Property="BorderBrush"
+                                        Value="#FFE9C4FD"/>
+                                <Setter TargetName="xBd"
+                                        Property="BorderThickness"
+                                        Value="3"/>
+                            </MultiDataTrigger>-->
+                            <!--<MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsDraging,
+                                                         RelativeSource={RelativeSource FindAncestor,
+                                                         AncestorType={x:Type local:XmlDiffControl}}}"
+                                               Value="True"/>
+                                    <Condition Property="behaviors:TreeViewItemMouseOverBehavior.IsMouseDirectlyOverItem"
+                                               Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="xBd"
+                                        Property="BorderBrush"
+                                        Value="#FFE9C4FD"/>
+                                <Setter TargetName="xBd"
+                                        Property="BorderThickness"
+                                        Value="3"/>
+                            </MultiDataTrigger>-->
+                            <Trigger Property="IsSelected"
+                                     Value="true">
+                                <Setter Property="Foreground"
+                                        Value="Blue"/>
                                 <Setter TargetName="xBd"
                                         Property="BorderBrush"
                                         Value="Blue"/>
@@ -143,29 +180,29 @@
                                         Property="BorderThickness"
                                         Value="2"/>
                             </Trigger>
-                                <MultiTrigger>
-                                    <MultiTrigger.Conditions>
-                                        <Condition Property="IsSelected"
-                                                   Value="true"/>
-                                        <Condition Property="IsSelectionActive"
-                                                   Value="false"/>
-                                    </MultiTrigger.Conditions>
-                                    <!--<Setter TargetName="xBd"
-                                                Property="Background"
-                                                Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>-->
-                                    <Setter Property="Foreground"
-                                            Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
-                                </MultiTrigger>
-                                <Trigger Property="IsEnabled"
-                                         Value="false">
-                                    <Setter Property="Foreground"
-                                            Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsSelected"
+                                               Value="true"/>
+                                    <Condition Property="IsSelectionActive"
+                                               Value="false"/>
+                                </MultiTrigger.Conditions>
+                                <!--<Setter TargetName="xBd"
+                                            Property="Background"
+                                            Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>-->
+                                <Setter Property="Foreground"
+                                        Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                            </MultiTrigger>
+                            <Trigger Property="IsEnabled"
+                                     Value="false">
+                                <Setter Property="Foreground"
+                                        Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <HierarchicalDataTemplate DataType="{x:Type model:Group}" ItemsSource="{Binding Children}">
             <Grid>
@@ -437,35 +474,35 @@
                       SelectedItemChanged="TreeView_SelectedItemChanged"
                       MouseLeftButtonUp="TreeView_MouseLeftButtonUp"/>-->
 
-            <TreeView x:Name="xTreeView"
-                      ItemContainerStyle="{StaticResource sTreeViewItem}"
-                      AllowDrop="True"
-                      ScrollViewer.ScrollChanged="xScrollViewer_ScrollChanged"
-                      SelectedItemChanged="TreeView_SelectedItemChanged"
-                      MouseDoubleClick="xTreeView_MouseDoubleClick"
-                      MouseRightButtonUp="TreeView_MouseRightButtonUp"
-                      PreviewMouseLeftButtonDown="xTreeView_PreviewMouseLeftButtonDown"
-                      PreviewMouseMove="xTreeView_PreviewMouseMove"
-                      Drop="xTreeView_Drop">
-                <TreeView.ContextMenu>
-                    <ContextMenu x:Name="xTreeViewContextMenu"
-                                 Opened="xTreeViewContextMenu_Opened">
-                        <MenuItem x:Name="xSaveMenu"
-                                  Header="Save"
-                                  Click="xSaveMenu_Click"/>
-                        <Separator/>
-                        <MenuItem x:Name="xCopyMenu"
-                                  Header="Copy"
-                                  Click="xCopyMenu_Click"/>
-                        <MenuItem x:Name="xPasteMenu"
-                                  Header="Paste"
-                                  Click="xPasteMenu_Click"/>
-                        <MenuItem x:Name="xDeleteMenu"
-                                  Header="Delete"
-                                  Click="xDeleteMenu_Click"/>
-                    </ContextMenu>
-                </TreeView.ContextMenu>
-            </TreeView>
+        <TreeView x:Name="xTreeView"
+                  ItemContainerStyle="{StaticResource sTreeViewItem}"
+                  AllowDrop="True"
+                  ScrollViewer.ScrollChanged="xScrollViewer_ScrollChanged"
+                  SelectedItemChanged="TreeView_SelectedItemChanged"
+                  MouseDoubleClick="xTreeView_MouseDoubleClick"
+                  MouseRightButtonUp="TreeView_MouseRightButtonUp"
+                  PreviewMouseLeftButtonDown="xTreeView_PreviewMouseLeftButtonDown"
+                  PreviewMouseMove="xTreeView_PreviewMouseMove"
+                  Drop="xTreeView_Drop">
+            <TreeView.ContextMenu>
+                <ContextMenu x:Name="xTreeViewContextMenu"
+                             Opened="xTreeViewContextMenu_Opened">
+                    <MenuItem x:Name="xSaveMenu"
+                              Header="Save"
+                              Click="xSaveMenu_Click"/>
+                    <Separator/>
+                    <MenuItem x:Name="xCopyMenu"
+                              Header="Copy"
+                              Click="xCopyMenu_Click"/>
+                    <MenuItem x:Name="xPasteMenu"
+                              Header="Paste"
+                              Click="xPasteMenu_Click"/>
+                    <MenuItem x:Name="xDeleteMenu"
+                              Header="Delete"
+                              Click="xDeleteMenu_Click"/>
+                </ContextMenu>
+            </TreeView.ContextMenu>
+        </TreeView>
         <!--</ScrollViewer>-->
     </Grid>
 </UserControl>
