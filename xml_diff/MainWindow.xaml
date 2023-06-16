@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:xml_diff"
         DataContext="{Binding MainViewModel, Mode=OneTime, Source={StaticResource ViewModelProvider}}"
         mc:Ignorable="d"
-        Title="XML file diff"
+        Title="XML file diff (Write mode)"
         Height="1200" Width="950">
     <Grid>
         <Grid.RowDefinitions>
