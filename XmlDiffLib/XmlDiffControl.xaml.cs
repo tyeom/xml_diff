@@ -796,6 +796,33 @@ namespace XmlDiffLib
             _draggedItem = this.FindAncestor<TreeViewItem>((DependencyObject)e.OriginalSource);
         }
 
+        private void xTreeViewItemGrid_PreviewDragEnter(object sender, DragEventArgs e)
+        {
+            this.HiddenInsertLineBorder();
+
+            Grid grid = (Grid)sender;
+            var foundBorder = grid.FindName("xInserLineBorder");
+            if (foundBorder is Border insertLineBorder)
+            {
+                insertLineBorder.Visibility = Visibility.Visible;
+            }
+
+            //TreeView treeView = (TreeView)sender;
+            //Point mousePosition = e.GetPosition(treeView);
+            //DependencyObject element = treeView.InputHitTest(mousePosition) as DependencyObject;
+
+            //TreeViewItem treeViewItem = this.FindAncestor<TreeViewItem>(element);
+            //var treeViewItemGrid = this.FindNearestChildControl<Grid>(treeViewItem);
+            //if (treeViewItemGrid is not null)
+            //{
+            //    var foundBorder = treeViewItemGrid.FindName("xInserLineBorder");
+            //    if (foundBorder is Border insertLineBorder)
+            //    {
+            //        insertLineBorder.Visibility = Visibility.Visible;
+            //    }
+            //}
+        }
+
         private void xTreeView_PreviewMouseMove(object sender, MouseEventArgs e)
         {
             if (Mode == EModeType.ReadOnly)
@@ -813,6 +840,7 @@ namespace XmlDiffLib
 
         private void xTreeView_Drop(object sender, DragEventArgs e)
         {
+            this.HiddenInsertLineBorder();
             IsDraging = false;
 
             if (Mode == EModeType.ReadOnly)
@@ -1353,6 +1381,78 @@ namespace XmlDiffLib
             while (current != null);
 
             return null;
+        }
+
+        private T FindControlAtMousePosition<T>(Visual current, Point position) where T : DependencyObject
+        {
+            var hitTestResult = VisualTreeHelper.HitTest(current, position);
+            return this.FindAncestor<T>(hitTestResult.VisualHit);
+        }
+
+        private T FindNearestChildControl<T>(DependencyObject parent) where T : DependencyObject
+        {
+            var queue = new Queue<DependencyObject>();
+            queue.Enqueue(parent);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+
+                // 자식 요소를 확인합니다.
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(current); i++)
+                {
+                    var child = VisualTreeHelper.GetChild(current, i);
+
+                    // 탐색할 자식 요소의 타입을 확인합니다.
+                    if (child is T childControl)
+                    {
+                        return childControl;
+                    }
+
+                    // 자식 요소를 큐에 추가합니다.
+                    queue.Enqueue(child);
+                }
+            }
+
+            return null;
+        }
+
+
+        private void HiddenInsertLineBorder()
+        {
+            if (diffTreeViewArr[0] is not null)
+            {
+                foreach (TreeViewItem treeViewItem in diffTreeViewArr[0]!.Items)
+                {
+                    this.HiddenInsertLineBorderRecursive(treeViewItem);
+                }
+            }
+
+            if (diffTreeViewArr[1] is not null)
+            {
+                foreach (TreeViewItem treeViewItem in diffTreeViewArr[1]!.Items)
+                {
+                    this.HiddenInsertLineBorderRecursive(treeViewItem);
+                }
+            }
+        }
+
+        private void HiddenInsertLineBorderRecursive(TreeViewItem treeviewItem)
+        {
+            foreach (TreeViewItem item in treeviewItem.Items)
+            {
+                var treeViewItemGrid = this.FindAncestor<Grid>(item);
+                if(treeViewItemGrid is not null)
+                {
+                    var foundBorder = treeViewItemGrid.FindName("xInserLineBorder");
+                    if (foundBorder is Border insertLineBorder)
+                    {
+                        insertLineBorder.Visibility = Visibility.Collapsed;
+                    }
+                }
+                if (item.HasItems)
+                    this.HiddenInsertLineBorderRecursive(item);
+            }
         }
 
         private void xCopyMenu_Click(object sender, RoutedEventArgs e)

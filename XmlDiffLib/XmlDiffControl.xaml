@@ -24,7 +24,8 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TreeViewItem}">
-                        <Grid>
+                        <Grid x:Name="xTreeViewItemGrid"
+                              PreviewDragEnter="xTreeViewItemGrid_PreviewDragEnter">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50"/>
                                 <ColumnDefinition Width="Auto"/>
@@ -32,11 +33,20 @@
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
 
+                            <Border x:Name="xInserLineBorder"
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Visibility="Collapsed"
+                                    BorderBrush="#FFE9C4FD"
+                                    BorderThickness="2"/>
+
                             <!--축소/확장 토글버튼-->
                             <!--<ToggleButton x:Name="xBtnExpander"
+                                              Grid.Row="1"
                                               Grid.Column="0"
                                               Width="25"
                                               Height="25"
@@ -49,7 +59,7 @@
                             <!--세로 라인-->
                             <Rectangle x:Name="xVerLn"
                                        Grid.Column="0"
-                                       Grid.RowSpan="2"
+                                       Grid.RowSpan="3"
                                        Width="1"
                                        Stroke="#FFDCDCDC"
                                        Margin="0,0,1,0"
@@ -57,7 +67,7 @@
                                        Fill="White"/>
 
                             <Border Name="xBd"
-                                    Grid.Row="0"
+                                    Grid.Row="1"
                                     Grid.Column="1"
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
@@ -78,13 +88,13 @@
                                     <ContentPresenter x:Name="PART_Header"
                                                       Grid.Column="0"
                                                       ContentSource="Header"
-                                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                                 </Grid>
                             </Border>
 
                             <ItemsPresenter x:Name="ItemsHost"
-                                            Grid.Row="1"
+                                            Grid.Row="2"
                                             Grid.Column="1"
                                             Grid.ColumnSpan="2"
                                             Margin="0, 0, 0, 10"/>
