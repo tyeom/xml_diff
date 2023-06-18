@@ -3,9 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:XmlDiffLib.Converters"
         xmlns:local="clr-namespace:XmlDiffLib"
         mc:Ignorable="d"
         Title="PropertyDetailWindow" Height="400" Width="720">
+    <Window.Resources>
+        <local:BindingProxy x:Key="bindingProxy" Data="{Binding .}"/>
+        <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+        <converters:EnumToVisibilityConverter x:Key="EnumToVisibilityConverter"/>
+    </Window.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -74,6 +81,10 @@
 
                             <TextBox Grid.Column="0"
                                      Text="{Binding Name, Mode=TwoWay}"
+                                     IsReadOnly="{Binding Data.ModeType,
+                                                          Source={StaticResource bindingProxy},
+                                                          Converter={StaticResource EnumToBooleanConverter},
+                                                          ConverterParameter=ReadOnly}"
                                      FontWeight="Bold"
                                      Width="70"
                                      Margin="0, 0, 20, 0">
@@ -94,6 +105,10 @@
                             </TextBox>
                             <TextBox Grid.Column="1"
                                      Text="{Binding Type, Mode=TwoWay}"
+                                     IsReadOnly="{Binding Data.ModeType,
+                                                          Source={StaticResource bindingProxy},
+                                                          Converter={StaticResource EnumToBooleanConverter},
+                                                          ConverterParameter=ReadOnly}"
                                      Width="70"
                                      Margin="0, 0, 10, 0">
                                 <TextBox.Style>
@@ -113,6 +128,10 @@
                             </TextBox>
                             <TextBox Grid.Column="2"
                                      Text="{Binding Value, Mode=TwoWay}"
+                                     IsReadOnly="{Binding Data.ModeType,
+                                                          Source={StaticResource bindingProxy},
+                                                          Converter={StaticResource EnumToBooleanConverter},
+                                                          ConverterParameter=ReadOnly}"
                                      Width="70"
                                      Margin="0, 0, 10, 0">
                                 <TextBox.Style>
@@ -177,6 +196,10 @@
 
                             <TextBox Grid.Column="0"
                                      Text="{Binding Name, Mode=TwoWay}"
+                                     IsReadOnly="{Binding Data.ModeType,
+                                                          Source={StaticResource bindingProxy},
+                                                          Converter={StaticResource EnumToBooleanConverter},
+                                                          ConverterParameter=ReadOnly}"
                                      FontWeight="Bold"
                                      Width="70"
                                      Margin="0, 0, 20, 0">
@@ -197,6 +220,10 @@
                             </TextBox>
                             <TextBox Grid.Column="1"
                                      Text="{Binding Type, Mode=TwoWay}"
+                                     IsReadOnly="{Binding Data.ModeType,
+                                                          Source={StaticResource bindingProxy},
+                                                          Converter={StaticResource EnumToBooleanConverter},
+                                                          ConverterParameter=ReadOnly}"
                                      Width="70"
                                      Margin="0, 0, 10, 0">
                                 <TextBox.Style>
@@ -216,6 +243,10 @@
                             </TextBox>
                             <TextBox Grid.Column="2"
                                      Text="{Binding Value, Mode=TwoWay}"
+                                     IsReadOnly="{Binding Data.ModeType,
+                                                          Source={StaticResource bindingProxy},
+                                                          Converter={StaticResource EnumToBooleanConverter},
+                                                          ConverterParameter=ReadOnly}"
                                      Width="70"
                                      Margin="0, 0, 10, 0">
                                 <TextBox.Style>

@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using XmlDiffLib.Models;
+using static XmlDiffLib.XmlDiffControl;
 
 namespace XmlDiffLib
 {
@@ -22,14 +23,29 @@ namespace XmlDiffLib
     /// </summary>
     public partial class PropertyDetailWindow : Window, INotifyPropertyChanged
     {
+        private EModeType _modeType;
         private Process _fromProcess;
         private Process _toProcess;
 
-        public PropertyDetailWindow()
+        public PropertyDetailWindow(EModeType modeType)
         {
             InitializeComponent();
 
             this.DataContext = this;
+            ModeType = modeType;
+        }
+
+        public EModeType ModeType
+        {
+            get => _modeType;
+            set
+            {
+                if (_modeType != value)
+                {
+                    _modeType = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public Process FromProcess

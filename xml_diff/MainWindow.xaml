@@ -38,15 +38,15 @@
                 <MenuItem x:Name="xWriteMenu"
                           Header="_Write"
                           IsChecked="{Binding ModeType,
-                                      Converter={StaticResource EnumToBooleanConverter},
-                                      ConverterParameter=Write}"
+                                              Converter={StaticResource EnumToBooleanConverter},
+                                              ConverterParameter=Write}"
                           Command="{Binding ModeCommand}"
                           CommandParameter="Write"/>
                 <MenuItem x:Name="xReadonlyMenu"
                           Header="_Readonly"
                           IsChecked="{Binding ModeType,
-                                      Converter={StaticResource EnumToBooleanConverter},
-                                      ConverterParameter=ReadOnly}"
+                                              Converter={StaticResource EnumToBooleanConverter},
+                                              ConverterParameter=ReadOnly}"
                           Command="{Binding ModeCommand}"
                           CommandParameter="ReadOnly"/>
             </MenuItem>
@@ -57,8 +57,8 @@
                     Grid.ColumnSpan="2"
                     Orientation="Horizontal"
                     Visibility="{Binding ModeType,
-                                 Converter={StaticResource EnumToVisibilityConverter},
-                                 ConverterParameter=Write}">
+                                         Converter={StaticResource EnumToVisibilityConverter},
+                                         ConverterParameter=Write}">
             <TextBlock Text="File : "
                        FontWeight="Bold"
                        Margin="10"/>

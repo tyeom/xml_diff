@@ -19,22 +19,22 @@
         <StackPanel Grid.Row="0"
                     Orientation="Horizontal">
             <TextBlock Visibility="{Binding Mode,
-                                    Converter={StaticResource EnumToVisibilityConverter},
-                                    ConverterParameter=ReadOnly}"
+                                            Converter={StaticResource EnumToVisibilityConverter},
+                                            ConverterParameter=ReadOnly}"
                        Text="From 파일 : "
                        FontWeight="Bold"
                        Margin="10"/>
             
             <TextBlock x:Name="xPath"
                        Visibility="{Binding Mode,
-                                    Converter={StaticResource EnumToVisibilityConverter},
-                                    ConverterParameter=ReadOnly}"
+                                            Converter={StaticResource EnumToVisibilityConverter},
+                                            ConverterParameter=ReadOnly}"
                        Margin="10"/>
             
             <Button x:Name="xBrowse"
                     Visibility="{Binding Mode,
-                                    Converter={StaticResource EnumToVisibilityConverter},
-                                    ConverterParameter=ReadOnly}"
+                                         Converter={StaticResource EnumToVisibilityConverter},
+                                         ConverterParameter=ReadOnly}"
                     Width="70"
                     Height="25"
                     Content="Browse.."
@@ -43,8 +43,8 @@
 
             <Rectangle Fill="#FF000000"
                        Visibility="{Binding Mode,
-                                    Converter={StaticResource EnumToVisibilityConverter},
-                                    ConverterParameter=ReadOnly}"
+                                            Converter={StaticResource EnumToVisibilityConverter},
+                                            ConverterParameter=ReadOnly}"
                        Width="1"
                        Margin="10"/>
 

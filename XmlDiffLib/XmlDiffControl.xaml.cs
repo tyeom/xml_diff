@@ -698,11 +698,6 @@ namespace XmlDiffLib
 
         private void xTreeView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (Mode == EModeType.ReadOnly)
-            {
-                return;
-            }
-
             var rightClickTreeViewItem = this.FindAncestor<TreeViewItem>((DependencyObject)e.OriginalSource);
             if (rightClickTreeViewItem is null) return;
 
@@ -732,12 +727,15 @@ namespace XmlDiffLib
                 {
                     if (toProcess.ParentGroup.IsEmpty is true) return;
 
-                    PropertyDetailWindow detailWindow = new();
+                    PropertyDetailWindow detailWindow = new(Mode);
                     detailWindow.ToProcess = toProcess;
                     detailWindow.FromProcess = toProcess.DiffFromProcess;
                     detailWindow.ShowDialog();
 
-                    XmlDiffHelper.Diff2(diffRootArr[0], diffRootArr[1]);
+                    if (Mode == EModeType.Write)
+                    {
+                        XmlDiffHelper.Diff2(diffRootArr[0], diffRootArr[1]);
+                    }
                 }
             }
             else
@@ -752,12 +750,15 @@ namespace XmlDiffLib
 
                         var toProcess = fromProcess.ParentGroup.MatchingGroupByTo.Processes.FirstOrDefault(p => p.Id == fromProcess.Id);
 
-                        PropertyDetailWindow detailWindow = new();
+                        PropertyDetailWindow detailWindow = new(Mode);
                         detailWindow.ToProcess = toProcess;
                         detailWindow.FromProcess = fromProcess;
                         detailWindow.ShowDialog();
 
-                        XmlDiffHelper.Diff2(diffRootArr[0], diffRootArr[1]);
+                        if (Mode == EModeType.Write)
+                        {
+                            XmlDiffHelper.Diff2(diffRootArr[0], diffRootArr[1]);
+                        }
                     }
                 }
             }
