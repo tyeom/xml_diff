@@ -824,6 +824,11 @@ namespace XmlDiffLib
             //}
         }
 
+        private void xTreeViewItemGrid_PreviewDragLeave(object sender, DragEventArgs e)
+        {
+            //this.HiddenInsertLineBorder();
+        }
+
         private void xTreeView_PreviewMouseMove(object sender, MouseEventArgs e)
         {
             if (Mode == EModeType.ReadOnly)
@@ -842,6 +847,7 @@ namespace XmlDiffLib
         private void xTreeView_Drop(object sender, DragEventArgs e)
         {
             this.HiddenInsertLineBorder();
+
             IsDraging = false;
 
             if (Mode == EModeType.ReadOnly)
@@ -1418,7 +1424,6 @@ namespace XmlDiffLib
             return null;
         }
 
-
         private void HiddenInsertLineBorder()
         {
             if (diffTreeViewArr[0] is not null)
@@ -1658,7 +1663,6 @@ namespace XmlDiffLib
             if (Mode == EModeType.ReadOnly)
             {
                 ((ContextMenu)sender).IsEnabled = false;
-                ((ContextMenu)sender).IsOpen = false;
                 return;
             }
             else
