@@ -566,7 +566,7 @@ namespace XmlDiffLib
             {
                 if (node.Name == "group")
                 {
-                    Group nestedGroup = ParseGroup(node, groupNode);
+                    Group nestedGroup = this.ParseGroup(node, groupNode);
                     group.NestedGroup.Add(nestedGroup);
                 }
                 else if (node.Name == "process")
