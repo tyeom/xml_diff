@@ -75,6 +75,7 @@ namespace XmlDiffLib.Models
         private bool _isChecked = false;
         private bool _isAdded = false;
         private bool _isExpanded = true;
+        private Group? _parentGroup = null;
         private Brush _color = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF000000")!;
         private ObservableCollection<Process>? _processes;
         private ObservableCollection<Group>? _nestedGroup;
@@ -205,7 +206,7 @@ namespace XmlDiffLib.Models
         /// diff 대상 to Group
         /// </summary>
         [XmlIgnore]
-        public Group MatchingGroupByTo
+        public Group? MatchingGroupByTo
         {
             get; set;
         }
@@ -222,9 +223,14 @@ namespace XmlDiffLib.Models
         }
 
         [XmlIgnore]
-        public Group ParentGroup
+        public Group? ParentGroup
         {
-            get; set;
+            get => _parentGroup;
+            set
+            {
+                _parentGroup = value;
+                OnPropertyChanged();
+            }
         }
 
         [XmlAttribute("IsEmpty")]

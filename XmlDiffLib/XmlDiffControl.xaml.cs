@@ -266,7 +266,7 @@ namespace XmlDiffLib
                     if (groupNode.Name != "group")
                         continue;
 
-                    var group = ParseGroup(groupNode, null);
+                    var group = this.ParseGroup(groupNode, null);
 
                     root.Groups.Add(group);
                 }
@@ -291,6 +291,10 @@ namespace XmlDiffLib
                     diffTreeViewArr[1] is not null)
                 {
                     XmlDiffHelper.Diff2(diffRootArr[0], diffRootArr[1]);
+                    if(Mode == EModeType.ReadOnly)
+                    {
+                        this.SynchronizeTreeViewByLeft();
+                    }
                 }
             }
             catch
@@ -376,6 +380,11 @@ namespace XmlDiffLib
                         if (treeViewItem is null) return;
 
                         var emptyTreeViewItemTarget = this.DeepCopyTreeViewItem(treeViewItem, null, null, true);
+                        // 빈 노드 추가시 트리뷰아이템의 Id null처리, 일단은 실제 모델에는 복제된 id그대로 사용됨.   [2023. 07. 13]
+                        /// 같은 트리뷰 내에서 노드가 이동될때 Id가 새로 만들어 될때 반대쪽 트리뷰 노드와 Id가 동일하게 생성 될 수 있는 경우를
+                        /// 방지하기 위해 높이 동기화를 위해 빈 노드가 추가 될때 이동된 노드와 동일하게 Id를 사용한다.
+                        /// 그래서 주석 처리 함.
+                        //emptyTreeViewItemTarget.Tag = null;
                         Group emptyGroup = new() { IsEmpty = true, MatchingGroupByTo = treeViewItem.Header as Group };
                         (treeViewItem.Header as Group).DiffFromGroup = emptyGroup;
                         emptyGroup.IsExpanded = emptyGroup.MatchingGroupByTo.IsExpanded;
@@ -430,6 +439,11 @@ namespace XmlDiffLib
                         if (treeViewItem is null) return;
 
                         var emptyTreeViewItemTarget = this.DeepCopyTreeViewItem(treeViewItem, null, null, true);
+                        // 빈 노드 추가시 트리뷰아이템의 Id null처리, 일단은 실제 모델에는 복제된 id그대로 사용됨.   [2023. 07. 13]
+                        /// 같은 트리뷰 내에서 노드가 이동될때 Id가 새로 만들어 될때 반대쪽 트리뷰 노드와 Id가 동일하게 생성 될 수 있는 경우를
+                        /// 방지하기 위해 높이 동기화를 위해 빈 노드가 추가 될때 이동된 노드와 동일하게 Id를 사용한다.
+                        /// 그래서 주석 처리 함.
+                        //emptyTreeViewItemTarget.Tag = null;
                         Group emptyGroup = new() { IsEmpty = true, DiffFromGroup = treeViewItem.Header as Group };
                         (treeViewItem.Header as Group).MatchingGroupByTo = emptyGroup;
                         emptyGroup.IsExpanded = emptyGroup.DiffFromGroup.IsExpanded;
@@ -481,6 +495,11 @@ namespace XmlDiffLib
                         if (treeViewItem is null) return;
 
                         var emptyTreeViewItemTarget = this.DeepCopyTreeViewItem(treeViewItem, null, null, true);
+                        // 빈 노드 추가시 트리뷰아이템의 Id null처리, 일단은 실제 모델에는 복제된 id그대로 사용됨.   [2023. 07. 13]
+                        /// 같은 트리뷰 내에서 노드가 이동될때 Id가 새로 만들어 될때 반대쪽 트리뷰 노드와 Id가 동일하게 생성 될 수 있는 경우를
+                        /// 방지하기 위해 높이 동기화를 위해 빈 노드가 추가 될때 이동된 노드와 동일하게 Id를 사용한다.
+                        /// 그래서 주석 처리 함.
+                        //emptyTreeViewItemTarget.Tag = null;
 
                         left.Items.Insert(i, emptyTreeViewItemTarget);
                         var parentGroup = left.Header as Group;
@@ -495,7 +514,14 @@ namespace XmlDiffLib
                         {
                             var process = emptyTreeViewItemTarget.Header as Process;
                             process.IsEmpty = true;
-                            parentGroup.Processes.Insert(i, process);
+                            if (parentGroup.Processes.Count > i)
+                            {
+                                parentGroup.Processes.Insert(i, process);
+                            }
+                            else
+                            {
+                                parentGroup.Processes.Add(process);
+                            }
                         }
 
                         i++;
@@ -545,10 +571,21 @@ namespace XmlDiffLib
                 }
                 else if (node.Name == "process")
                 {
-                    Process process = ParseProcess(node, groupNode);
+                    Process process = this.ParseProcess(node, groupNode);
                     group.Processes.Add(process);
                 }
             }
+
+            /// 마지막 Dummy 트리뷰아이템
+            /// 드래그 앤 드롭 액션으로 그룹 노드의 마지막 노드에 Process노드가 추가 될 수 있도록 더미 타겟 트리뷰아이템 용도
+            var emptyLastProcess = new Process() { IsEmpty = true, ParentGroup = groupNode.DataContext as Group };
+            TreeViewItem emptyLastTreeViewItem = new TreeViewItem();
+            emptyLastTreeViewItem.Header = emptyLastProcess;
+            emptyLastTreeViewItem.Tag = "999999.000000";
+            emptyLastTreeViewItem.DataContext = emptyLastProcess;
+            emptyLastTreeViewItem.ItemContainerStyle = this.Resources["sTreeViewItem"] as Style;
+            emptyLastTreeViewItem.Items.Add(new TreeViewItem());
+            groupNode.Items.Add(emptyLastTreeViewItem);
 
             return group;
         }
@@ -891,16 +928,21 @@ namespace XmlDiffLib
                 Group? parentGroup = parentItem.DataContext as Group;
                 Process? parentProcess = parentItem.DataContext as Process;
 
-                // 빈 노드로 이동 한 경우
-                if ((targetGroup is not null &&
-                    targetGroup.IsEmpty is true) ||
-                    (targetProcess is not null &&
-                    targetProcess.IsEmpty is true) ||
-                    (parentGroup is not null &&
-                    parentGroup.IsEmpty is true) ||
-                    (parentProcess is not null &&
-                    parentProcess.IsEmpty is true))
-                    return;
+                //// 마지막 노드로 이동 되는지 여부
+                //var isInsertLastNode = (targetProcess is not null && targetProcess.IsEmpty) &&
+                //    targetItem.IsCurrentLast();
+
+                //// 빈 노드로 이동 한 경우
+                //if ((targetGroup is not null &&
+                //    targetGroup.IsEmpty is true) ||
+                //    (targetProcess is not null &&
+                //    isInsertLastNode is false &&
+                //    targetProcess.IsEmpty is true) ||
+                //    (parentGroup is not null &&
+                //    parentGroup.IsEmpty is true) ||
+                //    (parentProcess is not null &&
+                //    parentProcess.IsEmpty is true))
+                //    return;
 
                 // Process -> 자신 부모 Group로 이동 한 경우
                 if(isSameTree is true &&
@@ -981,7 +1023,7 @@ namespace XmlDiffLib
         /// <param name="currentTreeViewItem"></param>
         /// <param name="isGroupId"></param>
         /// <returns></returns>
-        private string GenerationId(TreeViewItem currentTreeViewItem, bool isGroupId)
+        private string GenerationId(TreeViewItem currentTreeViewItem, bool isGroupId, bool isDigitIncrease = false, int digit = 0)
         {
             var parent = currentTreeViewItem.Parent as ItemsControl;
             string? id = null;
@@ -999,6 +1041,11 @@ namespace XmlDiffLib
                 double groupExtentionId = double.Parse(groupFullId.Substring(3, 3));
                 double groupExtentionUnit = double.Parse(groupFullId.Substring(3, 1));
 
+                if (isDigitIncrease)
+                {
+                    groupExtentionId = double.Parse(groupFullId.Substring(3, digit));
+                }
+
                 var findNextIdNode = this.xTreeView.FindTreeViewItemById($"{(groupId+1).ToString("D3").PadRight(6).Replace(" ", "0")}.000000");
                 // id 증가
                 if(isNestedGroup is false && findNextIdNode is null)
@@ -1014,7 +1061,7 @@ namespace XmlDiffLib
                     }
                     else
                     {
-                        groupExtentionId = (((groupExtentionId / (double)100) * 10) + (groupExtentionUnit * 100)) * 1000;
+                        groupExtentionId = (((groupExtentionId / (double)100) * 10) + (groupExtentionUnit * ((int)Math.Pow(10, groupExtentionId.ToString().Length - 1))));
                     }
                     string newGroupId = $"{(groupId.ToString("D3") + groupExtentionId).PadRight(6).Replace(" ", "0")}.000000";
                     findNextIdNode = this.xTreeView.FindTreeViewItemById(newGroupId);
@@ -1022,7 +1069,7 @@ namespace XmlDiffLib
                     // 중복
                     if(findNextIdNode is not null)
                     {
-                        return this.GenerationId(findNextIdNode, isGroupId);
+                        return this.GenerationId(findNextIdNode, isGroupId, true, groupExtentionId.ToString().Replace(".", "").Length);
                     }
                     else
                     {
@@ -1078,6 +1125,10 @@ namespace XmlDiffLib
                 int processId = int.Parse(processFullId.Substring(0, 3));
                 double processExtentionId = double.Parse(processFullId.Substring(3, 3));
                 double processExtentionUnit = double.Parse(processFullId.Substring(3, 1));
+                if(isDigitIncrease)
+                {
+                    processExtentionId = double.Parse(processFullId.Substring(3, digit));
+                }
 
                 var findNextIdNode = this.xTreeView.FindTreeViewItemById($"{groupFullId}.{(processId + 1).ToString("D3").PadRight(6).Replace(" ", "0")}");
                 // id 증가
@@ -1093,16 +1144,16 @@ namespace XmlDiffLib
                     }
                     else
                     {
-                        processExtentionId = (((processExtentionId / (double)100) * 10) + (processExtentionUnit * 100)) * 1000;
+                        processExtentionId = (((processExtentionId / (double)100) * 10) + (processExtentionUnit * ((int)Math.Pow(10, processExtentionId.ToString().Length - 1))));
                     }
 
-                    string newProcessId = $"{groupFullId}.{(processId.ToString("D3") + processExtentionId).PadRight(6).Replace(" ", "0")}";
+                    string newProcessId = $"{groupFullId}.{(processId.ToString("D3") + processExtentionId.ToString().Replace(".", "")).PadRight(6).Replace(" ", "0")}";
                     findNextIdNode = this.xTreeView.FindTreeViewItemById(newProcessId);
 
                     // 중복
                     if (findNextIdNode is not null)
                     {
-                        return this.GenerationId(findNextIdNode, isGroupId);
+                        return this.GenerationId(findNextIdNode, isGroupId, true, processExtentionId.ToString().Replace(".", "").Length);
                     }
                     else
                     {
@@ -1356,7 +1407,14 @@ namespace XmlDiffLib
                     newTreeViewItem.Tag = newId;
                     (newTreeViewItem.Header as Process).Id = newId;
 
-                    (newTreeViewItem.Header as Process).ParentGroup.Processes.Insert(targetIdx, newTreeViewItem.Header as Process);
+                    if ((newTreeViewItem.Header as Process).ParentGroup.Processes.Count > targetIdx)
+                    {
+                        (newTreeViewItem.Header as Process).ParentGroup.Processes.Insert(targetIdx, newTreeViewItem.Header as Process);
+                    }
+                    else
+                    {
+                        (newTreeViewItem.Header as Process).ParentGroup.Processes.Add(newTreeViewItem.Header as Process);
+                    }
                 }
             }
 
@@ -1662,12 +1720,20 @@ namespace XmlDiffLib
         {
             if (Mode == EModeType.ReadOnly)
             {
-                ((ContextMenu)sender).IsEnabled = false;
+                //((ContextMenu)sender).IsEnabled = false;
+                this.xSaveMenu.IsEnabled = false;
+                this.xCopyMenu.IsEnabled = false;
+                this.xPasteMenu.IsEnabled = false;
+                this.xDeleteMenu.IsEnabled = false;
                 return;
             }
             else
             {
-                ((ContextMenu)sender).IsEnabled = true;
+                //((ContextMenu)sender).IsEnabled = true;
+                this.xSaveMenu.IsEnabled = true;
+                this.xCopyMenu.IsEnabled = true;
+                this.xPasteMenu.IsEnabled = true;
+                this.xDeleteMenu.IsEnabled = true;
             }
 
             if (_clipboard is null || _clipboard.ItemNode is null)

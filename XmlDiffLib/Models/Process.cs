@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Media;
 using System.Collections.ObjectModel;
 using System.Windows.Controls;
+using System.Text.RegularExpressions;
 
 namespace XmlDiffLib.Models
 {
@@ -95,6 +96,20 @@ namespace XmlDiffLib.Models
             {
                 _isDup = value;
                 OnPropertyChanged();
+            }
+        }
+
+        [XmlIgnore]
+        public string? TypeNum
+        {
+            get
+            {
+                if(string.IsNullOrWhiteSpace(Type))
+                    return null;
+
+                string pattern = @"\d+";
+                var match = Regex.Match(Type, pattern);
+                return match?.Value;
             }
         }
 

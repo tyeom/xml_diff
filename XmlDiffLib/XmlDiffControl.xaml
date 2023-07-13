@@ -14,6 +14,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
         <converters:BooleanReverseConverter x:Key="BooleanReverseConverter"/>
         <converters:BoolReverseToVisConverter x:Key="BoolReverseToVisConverter"/>
+        <converters:IsNullConverter x:Key="IsNullConverter"/>
 
         <Style x:Key="sTreeViewItem" TargetType="{x:Type TreeViewItem}">
             <Setter Property="IsExpanded" Value="{Binding IsExpanded}"/>
@@ -220,6 +221,12 @@
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Style.Triggers>
+                            <DataTrigger Binding="{Binding ParentGroup, Converter={StaticResource IsNullConverter}}"
+                                         Value="False">
+                                <Setter Property="Margin"
+                                        Value="-30, 0, 0, 0"/>
+                            </DataTrigger>
+                            
                             <!--빈 노드-->
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
@@ -293,11 +300,13 @@
                               Margin="0, 0, 5, 0">
                     <ToggleButton.Style>
                         <Style TargetType="ToggleButton">
-                            <Setter Property="Content" Value="▶"/>
+                            <Setter Property="Content"
+                                    Value="▶"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsExpanded}"
                                              Value="True">
-                                    <Setter Property="Content" Value="▼"/>
+                                    <Setter Property="Content"
+                                            Value="▼"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -398,15 +407,15 @@
 
                 <Ellipse x:Name="xEllipse"
                          Grid.Column="0"
-                         Width="60"
-                         Height="60"
+                         Width="40"
+                         Height="40"
                          Stroke="{Binding Color}"
                          StrokeThickness="2"/>
                 <TextBlock Grid.Column="0"
                            Foreground="{Binding Color}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
-                           Text="{Binding Name}"
+                           Text="{Binding TypeNum}"
                            FontWeight="Bold"/>
                 <Rectangle Grid.Column="1"
                            Stroke="#FF000000"
@@ -432,7 +441,7 @@
                     <TextBlock Foreground="{Binding Color}"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
-                               Text="{Binding Type}"
+                               Text="{Binding Name}"
                                FontWeight="Bold"
                                Margin="3, 0, 0, 0"/>
                 </StackPanel>
